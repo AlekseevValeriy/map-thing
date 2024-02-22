@@ -64,5 +64,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = Project()
     w.show()
-    sys.excepthook = exception_hook
+    sys.excepthook = except_hook
     sys.exit(app.exec())
