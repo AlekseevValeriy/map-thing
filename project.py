@@ -1,68 +1,51 @@
 import sys
-import os
-import requests
-from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel
 
-SCREEN_SIZE = [600, 450]
+from PyQt6 import uic
+from PyQt6.QtGui import QPixmap, QKeyEvent
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt6.QtCore import Qt
 
-if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+from map_image import MapImage
 
 
 class Project(QMainWindow):
+    SCALE_COEFF = 2
+
     def __init__(self):
         super().__init__()
-        self.getImage()
-        self.initUI()
+        uic.loadUi('forms/mainWindow.ui', self)
+        self._map = MapImage()
+        self.updateImage()
 
-    def getImage(self):
-        map_request = 'http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map'
-        response = requests.get(map_request)
+    def updateImage(self):
+        pixmap = QPixmap()
+        image = self._map.image
+        if image is None:
+            QMessageBox(QMessageBox.Icon.Warning, 'Ошибка', 'Не удалось загрузить карту')
+        else:
+            pixmap.loadFromData(image, format='PNG')
+        self.image.setPixmap(pixmap)
 
-        if not response:
-            print('Ошибка Вполнения запроса:')
-            print(map_request)
-            print("Http статус:", response.status_code, "(", response.reason, ")")
-            sys.exit(1)
-
-        self.map_file = 'map.png'
-        with open(self.map_file, 'wb') as file:
-            file.write(response.content)
-
-    def initUI(self):
-        self.setGeometry(100, 100, *SCREEN_SIZE)
-        self.setWindowTitle('Отображение карты')
-
-        self.pixmap = QPixmap(self.map_file)
-        self.image = QLabel(self)
-        self.image.move(0, 0)
-        self.image.resize(600, 450)
-        self.image.setPixmap(self.pixmap)
-
-    def CloseEvent(self, event):
-        os.remove(self.map_file)
-
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() == Qt.Key.Key_PageUp:
+            self._map.scaling(1 / self.SCALE_COEFF)
+            self.updateImage()
+        elif event.key() == Qt.Key.Key_PageDown:
+            self._map.scaling(self.SCALE_COEFF)
+            self.updateImage()
 
 
 def exception_hook(exctype, value, traceback):
-    print(exctype, value, traceback)
     sys._excepthook(exctype, value, traceback)
-    sys.exit(1)
+
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
+
 if __name__ == '__main__':
-
-    sys._excepthook = sys.excepthook
-    sys.excepthook = exception_hook
-
     app = QApplication(sys.argv)
     w = Project()
     w.show()
-    sys.excepthook = exception_hook
+    sys.excepthook = except_hook
     sys.exit(app.exec())
