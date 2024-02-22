@@ -38,3 +38,41 @@ class MapImage:
         scale = self._scale * coeff
         if self.SCALE_MIN <= scale <= self.SCALE_MAX:
             self._scale = scale
+
+    @property
+    def longitude(self) -> float:
+        return self._longitude
+
+    @longitude.setter
+    def longitude(self, value: float):
+        if not (-180.0 <= value <= 180.0):
+            value += 180.0
+            value %= 360.0
+            value -= 180.0
+        self._longitude = value
+
+    @property
+    def lantitude(self) -> float:
+        return self._lantitude
+
+    @longitude.setter
+    def lantitude(self, value: float):
+        if -90.0 <= value <= 90.0:
+            self._lantitude = value
+
+    def move(self, d_longitude: float, d_lantitude: float):
+        self.longitude += d_longitude
+        self.lantitude += d_lantitude
+
+    def screen_up(self):
+        self.move(0, self._scale)
+
+    def screen_down(self):
+        self.move(0, -self._scale)
+
+    def screen_left(self):
+        self.move(-self._scale, 0)
+
+    def screen_right(self):
+        self.move(self._scale, 0)
+

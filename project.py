@@ -21,17 +21,27 @@ class Project(QMainWindow):
         pixmap = QPixmap()
         image = self._map.image
         if image is None:
-            QMessageBox(QMessageBox.Icon.Warning, 'Ошибка', 'Не удалось загрузить карту')
+            QMessageBox(QMessageBox.Icon.Warning, 'Ошибка', 'Не удалось загрузить карту',
+                        QMessageBox.StandardButton.NoButton, self).show()
         else:
             pixmap.loadFromData(image, format='PNG')
         self.image.setPixmap(pixmap)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key.Key_PageUp:
-            self._map.scaling(1 / self.SCALE_COEFF)
-            self.updateImage()
-        elif event.key() == Qt.Key.Key_PageDown:
-            self._map.scaling(self.SCALE_COEFF)
+        match event.key():
+            case Qt.Key.Key_PageUp:
+                self._map.scaling(1 / self.SCALE_COEFF)
+            case Qt.Key.Key_PageDown:
+                self._map.scaling(self.SCALE_COEFF)
+            case Qt.Key.Key_Up:
+                self._map.screen_up()
+            case Qt.Key.Key_Down:
+                self._map.screen_down()
+            case Qt.Key.Key_Left:
+                self._map.screen_left()
+            case Qt.Key.Key_Right:
+                self._map.screen_right()
+        if event.key() in (Qt.Key.Key_PageUp, Qt.Key.Key_PageDown, Qt.Key.Key_Up, Qt.Key.Key_Down, Qt.Key.Key_Left, Qt.Key.Key_Right):
             self.updateImage()
 
 
