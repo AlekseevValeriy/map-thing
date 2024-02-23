@@ -6,17 +6,75 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>450</height>
+    <width>709</width>
+    <height>468</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="radio_sh">
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Схема</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">radios</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radio_sp">
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Спутник</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">radios</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radio_gi">
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Гибрид</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">radios</string>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QLabel" name="image">
+      <property name="minimumSize">
+       <size>
+        <width>600</width>
+        <height>450</height>
+       </size>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -27,4 +85,7 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="radios"/>
+ </buttongroups>
 </ui>

@@ -2,10 +2,10 @@ import sys
 
 from PyQt6 import uic
 from PyQt6.QtGui import QPixmap, QKeyEvent
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel
 from PyQt6.QtCore import Qt
 
-from map_image import MapImage
+from map_image import MapImage, MapType
 
 
 class Project(QMainWindow):
@@ -17,6 +17,19 @@ class Project(QMainWindow):
         self._map = MapImage()
         self.updateImage()
 
+        self.radios.buttonClicked.connect(self.select_layer)
+
+
+    def select_layer(self):
+        match self.radios.checkedButton():
+            case self.radio_sh:
+                self._map.set_type(MapType.SCHEMA)
+            case self.radio_sp:
+                self._map.set_type(MapType.SATELLITE)
+            case self.radio_gi:
+                self._map.set_type(MapType.HYBRID)
+        self.updateImage()
+
     def updateImage(self):
         pixmap = QPixmap()
         image = self._map.image
@@ -24,7 +37,7 @@ class Project(QMainWindow):
             QMessageBox(QMessageBox.Icon.Warning, 'Ошибка', 'Не удалось загрузить карту',
                         QMessageBox.StandardButton.NoButton, self).show()
         else:
-            pixmap.loadFromData(image, format='PNG')
+            pixmap.loadFromData(image)
         self.image.setPixmap(pixmap)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:

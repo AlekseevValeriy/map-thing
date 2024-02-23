@@ -1,12 +1,14 @@
+import io
+
 import requests
 from enum import StrEnum
-from typing import Optional
+from PIL import Image
 
 
 class MapType(StrEnum):
     SCHEMA = 'map'
     SATELLITE = 'sat'
-    HYBRID = 'hyb'
+    HYBRID = 'skl'
 
 class MapImage:
     SCALE_MAX = 35
@@ -19,12 +21,11 @@ class MapImage:
         self._scale: float = 0.002
         self._type: MapType = MapType.SCHEMA
 
-    @property
-    def image(self) -> bytes | None:
+    def  _get_image(self, _type):
         params = {
-            'll': ','.join(map(str, (self._longitude, self._lantitude))),
-            'spn': ','.join(map(str, (self._scale, self._scale))),
-            'l': self._type
+                'll': ','.join(map(str, (self._longitude, self._lantitude))),
+                'spn': ','.join(map(str, (self._scale, self._scale))),
+                'l': self._type
         }
         response = requests.get(self.API, params=params)
         if not response:
@@ -33,6 +34,17 @@ class MapImage:
             print("Http статус:", response.status_code, "(", response.reason, ")")
             return None
         return response.content
+
+    @property
+    def image(self) -> bytes | None:
+        if self._type != MapType.HYBRID:
+            return self._get_image(self._type)
+        satellite_image = Image.open(io.BytesIO(self._get_image(MapType.SATELLITE)))
+        hybrid_mask = Image.open(io.BytesIO(self._get_image(MapType.HYBRID)))
+        satellite_image.paste(hybrid_mask, (0, 0), hybrid_mask)
+        imh_byte_arr = io.BytesIO()
+        satellite_image.save(imh_byte_arr, format='PNG')
+        return imh_byte_arr.getvalue()
 
     def scaling(self, coeff: float) -> None:
         scale = self._scale * coeff
@@ -75,4 +87,7 @@ class MapImage:
 
     def screen_right(self):
         self.move(self._scale, 0)
+
+    def set_type(self, _type):
+        self._type = _type
 
