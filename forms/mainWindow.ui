@@ -126,6 +126,24 @@
                   </item>
               </layout>
     </item>
+          <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+                  <item>
+                      <widget class="QLabel" name="label">
+                          <property name="text">
+                              <string>Полный адрес</string>
+                          </property>
+                      </widget>
+                  </item>
+                  <item>
+                      <widget class="QLineEdit" name="full_place">
+                          <property name="readOnly">
+                              <bool>true</bool>
+                          </property>
+                      </widget>
+                  </item>
+              </layout>
+          </item>
    </layout>
   </widget>
  </widget>
