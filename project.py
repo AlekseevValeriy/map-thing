@@ -2,7 +2,7 @@ import sys
 
 from PyQt6 import uic
 from PyQt6.QtGui import QPixmap, QKeyEvent
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QPushButton
 from PyQt6.QtCore import Qt
 
 from map_image import MapImage, MapType
@@ -18,7 +18,11 @@ class Project(QMainWindow):
         self.updateImage()
 
         self.radios.buttonClicked.connect(self.select_layer)
+        self.search.clicked.connect(self.search_what)
 
+    def search_what(self):
+        self._map.change_position(self.search_line.text())
+        self.updateImage()
 
     def select_layer(self):
         match self.radios.checkedButton():

@@ -17,15 +17,36 @@ class MapImage:
 
     def __init__(self):
         self._longitude: float = 37.530887
-        self._lantitude: float = 55.703118
-        self._scale: float = 0.002
+        self._latitude: float = 55.703118
+        self._scale: float = 0.00005
         self._type: MapType = MapType.SCHEMA
+        self.geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+        self.flags = []
+
+    def get_flags(self):
+        return self.flags
+
+    def change_position(self, place: str) -> None:
+        geocoder_params = {
+            "apikey": "996e91c0-34f6-4b50-a2c6-da63e579d3e3",
+            "geocode": place,
+            "format": "json"
+        }
+
+        response = requests.get(self.geocoder_api_server, params=geocoder_params)
+        json_response = response.json()["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"][
+            "pos"]
+        self._longitude, self._latitude = map(float, json_response.split(" "))
+        if (coordinate := (self._longitude, self._latitude)) not in self.flags:
+            self.flags.append(coordinate)
+
 
     def  _get_image(self, _type):
         params = {
-                'll': ','.join(map(str, (self._longitude, self._lantitude))),
+            'll': ','.join(map(str, (self._longitude, self._latitude))),
                 'spn': ','.join(map(str, (self._scale, self._scale))),
-                'l': self._type
+            'l': self._type,
+            'pt': '~'.join(f'{lo},{la},round' for lo, la in self.flags)
         }
         response = requests.get(self.API, params=params)
         if not response:
@@ -64,17 +85,17 @@ class MapImage:
         self._longitude = value
 
     @property
-    def lantitude(self) -> float:
-        return self._lantitude
+    def latitude(self) -> float:
+        return self._latitude
 
     @longitude.setter
-    def lantitude(self, value: float):
+    def latitude(self, value: float):
         if -90.0 <= value <= 90.0:
-            self._lantitude = value
+            self._latitude = value
 
-    def move(self, d_longitude: float, d_lantitude: float):
-        self.longitude += d_longitude
-        self.lantitude += d_lantitude
+    def move(self, d_longitude: float, d_latitude: float):
+        self._longitude += d_longitude
+        self._latitude += d_latitude
 
     def screen_up(self):
         self.move(0, self._scale)
