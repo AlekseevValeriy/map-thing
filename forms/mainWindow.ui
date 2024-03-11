@@ -96,6 +96,19 @@
           <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                   <item>
+                      <widget class="QPushButton" name="drop">
+                          <property name="minimumSize">
+                              <size>
+                                  <width>50</width>
+                                  <height>20</height>
+                              </size>
+                          </property>
+                          <property name="text">
+                              <string>Сброс</string>
+                          </property>
+                      </widget>
+                  </item>
+                  <item>
                       <widget class="QLineEdit" name="search_line"/>
                   </item>
                   <item>

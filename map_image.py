@@ -56,6 +56,9 @@ class MapImage:
             return None
         return response.content
 
+    def drop_marks(self):
+        self.flags = []
+
     @property
     def image(self) -> bytes | None:
         if self._type != MapType.HYBRID:
