@@ -40,7 +40,7 @@ class MapImage:
         if (coordinate := (self._longitude, self._latitude)) not in self.flags:
             self.flags.append(coordinate)
 
-    def get_current_address(self) -> str:
+    def get_current_address(self, mail_address: bool = False) -> str:
         geocoder_params = {
             "apikey": "996e91c0-34f6-4b50-a2c6-da63e579d3e3",
             "geocode": f'{self._longitude},{self._latitude}',
@@ -48,8 +48,14 @@ class MapImage:
         }
         response = requests.get(self.geocoder_api_server, params=geocoder_params)
         json_response = response.json()
-        return json_response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty'][
-            'GeocoderMetaData']['Address']['formatted']
+        address_data = \
+        json_response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty'][
+            'GeocoderMetaData']['Address']
+        address_text = address_data['formatted'] if 'formatted' in address_data else ''
+        if mail_address:
+            if 'postal_code' in address_data:
+                address_text += f", {address_data['postal_code']}"
+        return address_text
 
 
 
