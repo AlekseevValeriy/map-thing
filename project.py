@@ -20,6 +20,7 @@ class Project(QMainWindow):
         self.radios.buttonClicked.connect(self.select_layer)
         self.search.clicked.connect(self.search_what)
         self.drop.clicked.connect(self.drop_search_marks)
+        self.mail.stateChanged.connect(self.search_what)
 
     def drop_search_marks(self):
         self._map.drop_marks()
@@ -27,9 +28,10 @@ class Project(QMainWindow):
         self.full_place.clear()
 
     def search_what(self):
-        self._map.change_position(self.search_line.text())
-        self.updateImage()
-        self.full_place.setText(self._map.get_current_address(self.mail.isChecked()))
+        if self.search_line.text():
+            self._map.change_position(self.search_line.text())
+            self.updateImage()
+            self.full_place.setText(self._map.get_current_address(self.mail.isChecked()))
 
     def select_layer(self):
         match self.radios.checkedButton():
